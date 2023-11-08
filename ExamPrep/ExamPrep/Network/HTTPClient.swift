@@ -13,6 +13,7 @@ enum NetworkError: Error {
     case decodingError(Error)
     case invalidResponse
     case invalidURL
+    case unauthorized
 }
 
 extension NetworkError: LocalizedError {
@@ -29,8 +30,8 @@ extension NetworkError: LocalizedError {
                 return NSLocalizedString("Invalid response", comment: "invalidResponse")
             case .invalidURL:
                 return NSLocalizedString("Invalid URL", comment: "invalidURL")
-          //  case .httpError(_):
-           //     return NSLocalizedString("Bad request", comment: "badRequest")
+            case .unauthorized:
+                return NSLocalizedString("Unauthorized", comment: "unauthorized")
         }
     }
     
@@ -105,14 +106,15 @@ struct HTTPClient {
         
         let (data, response) = try await session.data(for: request)
         
-        guard let _ = response as? HTTPURLResponse else {
-                throw NetworkError.invalidResponse
+        if let httpResponse = response as? HTTPURLResponse {
+            
+            switch httpResponse.statusCode {
+                case 401:
+                    throw NetworkError.unauthorized
+                default: break
+            }
+            
         }
-        
-        /*
-        guard (200..<300).contains(httpResponse.statusCode) else {
-            throw NetworkError.httpError(httpResponse.statusCode)
-        } */
         
         do {
             let result = try JSONDecoder().decode(resource.modelType, from: data)

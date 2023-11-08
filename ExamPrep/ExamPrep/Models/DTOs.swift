@@ -17,3 +17,11 @@ struct LoginResponse: Codable {
     let message: String?
     let token: String?
 }
+
+struct Course: Codable, Identifiable {
+    let id: Int?
+    let name: String
+    let description: String
+    let courseCode: String
+}
+

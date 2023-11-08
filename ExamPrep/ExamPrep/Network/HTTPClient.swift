@@ -66,12 +66,17 @@ struct HTTPClient {
     
     private init() {
         let configuration = URLSessionConfiguration.default
+        
+        // add the default header
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json"]
+        
         // get the token from the Keychain
         let token: String? = Keychain.get("jwttoken")
         
         if let token {
-            configuration.httpAdditionalHeaders = ["Content-Type": "application/json", "Authorization": "Bearer \(token)"]
+            configuration.httpAdditionalHeaders?["Authorization"] = "Bearer \(token)"
         }
+        
         
         self.session = URLSession(configuration: configuration)
     }

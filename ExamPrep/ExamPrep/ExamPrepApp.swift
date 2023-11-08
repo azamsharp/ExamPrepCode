@@ -15,8 +15,12 @@ struct ExamPrepApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                ContentView()
-                    .environment(account)
+                if account.isLoggedIn {
+                    Text("Dashboard")
+                } else {
+                    LoginScreen()
+                        .environment(account)
+                }
             }
         }
     }
